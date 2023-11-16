@@ -1,6 +1,7 @@
 const UserModel = require('../models/usersModel')
 const express = require('express')
 const router = express.Router()
+const {protect} = require('../middleware/auth')
 
 
 //ruta de registro de usuarios
@@ -89,5 +90,23 @@ const sendTokenResponse = (user,statusCode , res) => {
         })
 }
 
+
+//obtener usuario logeado
+router.get('/me' , protect,  async (req, res , next) => {
+    
+    try{
+        const user = await UserModel.findById(req.user.id)
+            res.status(200).json({
+                success: true,
+                data: user
+            })
+    }catch(error){
+        res.status(400).json({
+            success: false,
+            msg: error.message
+        })
+    }
+  
+})
 
 module.exports = router
